@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G20 → G80 M3 | 3D Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 3D SAHNE -->
+  <div id="viewport"></div>
+
+  <!-- ÜST MARKA BLOĞU -->
+  <header class="brand">
+    <div class="brand-mark">
+      <span class="brand-chip">G20 → G80</span>
+      <h1>M3 <span class="accent">3D CONFIGURATOR</span></h1>
+    </div>
+  </header>
+
+  <!-- ALT HUD ŞERİDİ -->
+  <div class="hud" id="hud">
+    <div class="hud-item"><span class="hud-label">ŞASİ</span><span class="hud-value">G20 330i</span></div>
+    <div class="hud-sep"></div>
+    <div class="hud-item"><span class="hud-label">TAKILI M3 PARÇA</span><span class="hud-value" id="hudParts">Yok</span></div>
+    <div class="hud-sep"></div>
+    <div class="hud-item"><span class="hud-label">BOYA</span><span class="hud-value" id="hudPaint">—</span></div>
+    <div class="hud-sep"></div>
+    <div class="hud-item"><span class="hud-label">JANT</span><span class="hud-value" id="hudRim">—</span></div>
+    <div class="hud-sep"></div>
+    <div class="hud-item"><span class="hud-label">FARLAR</span><span class="hud-value" id="hudLights">Kapalı</span></div>
+  </div>
+
+  <!-- SAĞ ÖZELLEŞTİRME PANELİ -->
+  <aside class="panel" id="panel">
+    <div class="panel-scroll">
+
+      <!-- 1. M3 DÖNÜŞÜM PARÇALARI -->
+      <section class="pg">
+        <div class="pg-head">
+          <span class="pg-index">01</span>
+          <h2>M3 Dönüşüm Parçaları</h2>
+        </div>
+        <p class="hint" style="margin-top:0;margin-bottom:14px;">G20 330i şasisi sahnede sabit. Aşağıdaki parçaları tek tek G80 M3'ten söküp takın.</p>
+        <div class="toggle-list">
+          <label class="toggle-item">
+            <span>Ön Tampon &amp; Izgara</span>
+            <input type="checkbox" id="partFrontBumper">
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-item">
+            <span>Arka Tampon &amp; Bagaj</span>
+            <input type="checkbox" id="partRearBumper">
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-item">
+            <span>Kaput</span>
+            <input type="checkbox" id="partHood">
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-item">
+            <span>Farlar (M4 LED Far Grubu)</span>
+            <input type="checkbox" id="partHeadlights">
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-item">
+            <span>Karbon Arka Spoiler</span>
+            <input type="checkbox" id="partSpoiler">
+            <span class="switch"></span>
+          </label>
+        </div>
+        <p class="hint" id="partLoadHint"></p>
+      </section>
+
+      <!-- 2. KALİBRASYON MODU -->
+      <section class="pg">
+        <div class="pg-head"><span class="pg-index">02</span><h2>Kalibrasyon Modu</h2></div>
+        <p class="hint" style="margin-top:0;margin-bottom:14px;">Otomatik hizalama tam oturmadıysa, takılı parçayı sahnede elle taşıyıp/döndürüp/ölçekleyerek tam yerine oturtun.</p>
+        <label class="toggle-item">
+          <span>Kalibrasyon Modunu Aç</span>
+          <input type="checkbox" id="calibEnable">
+          <span class="switch"></span>
+        </label>
+        <label class="toggle-item">
+          <span>Tel Kafes Modu (parça görünmüyorsa)</span>
+          <input type="checkbox" id="debugWireframe">
+          <span class="switch"></span>
+        </label>
+        <div id="calibControls" style="display:none; margin-top:14px;">
+          <select id="calibPartSelect" class="calib-select"></select>
+          <div class="seg seg--3" id="calibModeSeg" style="margin-top:10px;">
+            <button class="seg-btn is-active" data-mode="translate">Taşı</button>
+            <button class="seg-btn" data-mode="rotate">Döndür</button>
+            <button class="seg-btn" data-mode="scale">Ölçek</button>
+          </div>
+          <button class="btn-primary" id="calibCopy">Değerleri Kopyala</button>
+          <button class="btn-outline" id="calibReset">Otomatik Hizalamaya Dön</button>
+          <span class="copy-toast" id="calibToast">Kopyalandı — main.js'teki CALIBRATION içine yapıştırın ✓</span>
+        </div>
+      </section>
+
+      <!-- 2. BOYA -->
+      <section class="pg">
+        <div class="pg-head"><span class="pg-index">03</span><h2>Gövde Rengi</h2></div>
+        <div class="swatch-row" id="paintSwatches" data-target="paint"></div>
+        <label class="custom-color">Özel Renk <input type="color" id="paintCustom" value="#1c1f22"></label>
+      </section>
+
+      <!-- 3. JANT -->
+      <section class="pg">
+        <div class="pg-head"><span class="pg-index">04</span><h2>Jant Rengi</h2></div>
+        <div class="swatch-row" id="rimSwatches" data-target="rim"></div>
+      </section>
+
+      <!-- 4. FARLAR AÇMA/KAPAMA -->
+      <section class="pg">
+        <div class="pg-head"><span class="pg-index">05</span><h2>Farlar</h2></div>
+        <label class="toggle-item toggle-item--lg">
+          <span>Farları Aç</span>
+          <input type="checkbox" id="toggleLights">
+          <span class="switch"></span>
+        </label>
+      </section>
+
+      <!-- 5. GÖRÜNÜM -->
+      <section class="pg">
+        <div class="pg-head"><span class="pg-index">06</span><h2>Görünüm</h2></div>
+        <label class="toggle-item">
+          <span>Otomatik Döndürme</span>
+          <input type="checkbox" id="toggleRotate">
+          <span class="switch"></span>
+        </label>
+        <p class="sub-label">Ortam</p>
+        <div class="seg seg--3" id="envSeg">
+          <button class="seg-btn is-active" data-env="dark">Stüdyo</button>
+          <button class="seg-btn" data-env="showroom">Showroom</button>
+          <button class="seg-btn" data-env="grid">Izgara</button>
+        </div>
+        <button class="btn-outline" id="resetCam">Kamerayı Sıfırla</button>
+        <p class="sub-label">Zemin Yüksekliği <span id="heightValue" style="color:var(--accent); font-family:var(--font-mono);">-1.86</span></p>
+        <input type="range" id="heightAdjust" min="-2.5" max="0.3" step="0.005" value="-1.86" style="width:100%;">
+      </section>
+
+      <!-- 6. EXPORT -->
+      <section class="pg pg--last">
+        <div class="pg-head"><span class="pg-index">07</span><h2>Dışa Aktar</h2></div>
+        <button class="btn-primary" id="exportPng">Görüntüyü İndir (PNG)</button>
+        <button class="btn-outline" id="exportConfig">Yapılandırmayı Kopyala</button>
+        <span class="copy-toast" id="copyToast">Kopyalandı ✓</span>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- YÜKLEME EKRANI -->
+  <div class="loader" id="loader">
+    <div class="loader-inner">
+      <div class="loader-title" id="loaderTitle">G20 330i modeli yükleniyor</div>
+      <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+      <div class="loader-pct" id="loaderPct">0%</div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
