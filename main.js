@@ -11,11 +11,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
    Örnek: frontBumper: { position:[0.02,-0.01,0.15], rotation:[0,0.03,0], scale:[1.04,1.04,1.04] }
 ===================================================================== */
 const CALIBRATION = {
-  frontBumper: { position:[0.0111,-0.5077,0.2274], rotation:[-3.1416,-0.008,-3.1416], scale:[98.7108,117.2147,117.2147] },
-  rearBumper: { position:[-0.0058,-0.3971,-0.4225], rotation:[-3.1416,0.001,-3.1416], scale:[100.4775,101.4389,112.5301] },
-  hood: { position:[0.0247,-0.3754,-0.1151], rotation:[-3.1416,-0.0195,-3.1416], scale:[100.2913,97.4054,103.4228] },
-  headlights: { position:[-0.1242,-0.3667,-0.3161], rotation:[-3.1416,0.0446,-3.1416], scale:[93.8694,93.8694,93.8694] },
-  spoiler: { position:[-0.0128,-0.025,1.198], rotation:[-3.1416,-0.0202,-3.1416], scale:[93.0676,68.237,39.382] },
+  frontBumper: { position: [0.0111, -0.5077, 0.2274], rotation: [-3.1416, -0.008, -3.1416], scale: [98.7108, 117.2147, 117.2147] },
+  rearBumper: { position: [0.0142, -0.3798, -0.2849], rotation: [-3.1416, 0.001, -3.1416], scale: [99.0119, 101.4389, 107.2002] },
+  hood: { position: [0.0247, -0.3754, -0.1151], rotation: [-3.1416, -0.0195, -3.1416], scale: [100.2913, 97.4054, 103.4228] },
+  headlights: { position: [-0.1242, -0.3667, -0.3161], rotation: [-3.1416, 0.0446, -3.1416], scale: [93.8694, 93.8694, 93.8694] },
+  spoiler: { position: [-0.0128, -0.025, 1.198], rotation: [-3.1416, -0.0202, -3.1416], scale: [93.0676, 68.237, 39.382] },
 };
 function applySavedCalibration(key, group) {
   const c = CALIBRATION[key];
@@ -35,18 +35,18 @@ const MODEL_PATHS = {
 };
 
 const PAINT_COLORS = [
-  { name: 'Alpine Beyaz',   hex: '#f2f3f0' },
-  { name: 'Mat Siyah',      hex: '#15161a' },
-  { name: 'Frozen Mavi',    hex: '#1c3a52' },
-  { name: 'Satin Yeşil',    hex: '#2f4a34' },
-  { name: 'Brooklyn Gri',   hex: '#4d5257' },
+  { name: 'Alpine Beyaz', hex: '#f2f3f0' },
+  { name: 'Mat Siyah', hex: '#15161a' },
+  { name: 'Frozen Mavi', hex: '#1c3a52' },
+  { name: 'Satin Yeşil', hex: '#2f4a34' },
+  { name: 'Brooklyn Gri', hex: '#4d5257' },
   { name: 'İnternational Kırmızı', hex: '#7a1620' },
 ];
 const RIM_COLORS = [
-  { name: 'Siyah',  hex: '#1a1a1c', metalness: 0.7, roughness: 0.35 },
-  { name: 'Bronz',  hex: '#7a5a34', metalness: 0.85, roughness: 0.3 },
-  { name: 'Gümüş',  hex: '#c7c9cc', metalness: 0.9,  roughness: 0.25 },
-  { name: 'Krom',   hex: '#eef0f2', metalness: 1.0,  roughness: 0.08 },
+  { name: 'Siyah', hex: '#1a1a1c', metalness: 0.7, roughness: 0.35 },
+  { name: 'Bronz', hex: '#7a5a34', metalness: 0.85, roughness: 0.3 },
+  { name: 'Gümüş', hex: '#c7c9cc', metalness: 0.9, roughness: 0.25 },
+  { name: 'Krom', hex: '#eef0f2', metalness: 1.0, roughness: 0.08 },
 ];
 
 /* =====================================================================
@@ -55,13 +55,13 @@ const RIM_COLORS = [
       isimler yalnızca mesh tanımlarında var. Node<->mesh eşleşmesi offline
       olarak analiz edilip aşağıdaki sabit listeler çıkarıldı.
 ===================================================================== */
-const G20_FRONT_BUMPER = [52,53,54,55,56,57,58,59,60,61,62,63, 76,77,78,79,80,81,82,83].map(n => `Object_${n}`);
-const G20_REAR_BUMPER  = [104,105,106,107,108,109,110].map(n => `Object_${n}`);
-const G20_HOOD         = [158,159,160,161,162].map(n => `Object_${n}`);
-const G20_HEADLIGHTS   = [170,171,173,174].map(n => `Object_${n}`);
-const G20_PAINT_NODES  = [34,44,72,79,87,94,106,113,116,126,144,147,152,158].map(n => `Object_${n}`);
+const G20_FRONT_BUMPER = [52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 76, 77, 78, 79, 80, 81, 82, 83].map(n => `Object_${n}`);
+const G20_REAR_BUMPER = [72].map(n => `Object_${n}`);
+const G20_HOOD = [158, 159, 160, 161, 162].map(n => `Object_${n}`);
+const G20_HEADLIGHTS = [170, 171, 173, 174].map(n => `Object_${n}`);
+const G20_PAINT_NODES = [34, 44, 72, 79, 87, 94, 106, 113, 116, 126, 144, 147, 152, 158].map(n => `Object_${n}`);
 const G20_RIM_NODES_PREFIXES = ['hub_lf', 'hub_rf', 'hub_lr', 'hub_rr']; // mesh adı bazlı (node adı yerine)
-const G20_RIM_NODES = [225,226,227, 229,230,231, 221,222,223, 233,234,235].map(n => `Object_${n}`);
+const G20_RIM_NODES = [225, 226, 227, 229, 230, 231, 221, 222, 223, 233, 234, 235].map(n => `Object_${n}`);
 
 const nameSet = (arr) => new Set(arr);
 const SET_FRONT = nameSet(G20_FRONT_BUMPER);
@@ -75,16 +75,17 @@ const SET_RIM = nameSet(G20_RIM_NODES);
 const isG80FrontBumper = (n) => {
   const s = n.toLowerCase();
   return s.startsWith('m3g80law_bumper_f') || s.startsWith('compot_bumper') ||
-         s.includes('grille_f_csl') || s.includes('csr2_grille') || s === 'paint_fb_864' || s.startsWith('paint_fb_');
+         s.includes('grille_f_csl') || s.includes('csr2_grille') || s === 'paint_fb_864' || s.startsWith('paint_fb_') ||
+         s.startsWith('for_m3') || s.startsWith('badge_fb') || s.startsWith('chrome_badgefb') || s.startsWith('blackplastic_badge_fb');
 };
 const isG80RearBumper = (n) => {
   const s = n.toLowerCase();
-  return s.startsWith('paint_rb') || s.startsWith('paint_trunk');
+  return s.startsWith('paint_rb');
 };
 const isG80Hood = (n) => {
   const s = n.toLowerCase();
   return s.startsWith('hood_') || s.startsWith('paint_hood') || s.startsWith('chromehangershood') ||
-         s.startsWith('metalbodyenginebayhood') || s.startsWith('pianoblackhoodenginebay');
+    s.startsWith('metalbodyenginebayhood') || s.startsWith('pianoblackhoodenginebay');
 };
 const isG80Headlight = (n) => n.toLowerCase().startsWith('m4_2024_headlight');
 const isG80Spoiler = (n) => n.toLowerCase().startsWith('wing_a_00') || n.toLowerCase().startsWith('compot_wings');
@@ -98,9 +99,9 @@ const isHeadlightBeam = (n) => n.toLowerCase().includes('lowhighbeam');
 
 const PART_DEFS = {
   frontBumper: { g20: (n) => SET_FRONT.has(n), g80: isG80FrontBumper, label: 'Ön Tampon & Izgara' },
-  rearBumper:  { g20: (n) => SET_REAR.has(n),  g80: isG80RearBumper,  label: 'Arka Tampon & Bagaj' },
-  hood:        { g20: (n) => SET_HOOD.has(n),  g80: isG80Hood,        label: 'Kaput' },
-  headlights:  { g20: (n) => SET_HEADLIGHTS.has(n), g80: isG80Headlight, label: 'Farlar' },
+  rearBumper: { g20: (n) => SET_REAR.has(n), g80: isG80RearBumper, label: 'Arka Tampon & Bagaj' },
+  hood: { g20: (n) => SET_HOOD.has(n), g80: isG80Hood, label: 'Kaput' },
+  headlights: { g20: (n) => SET_HEADLIGHTS.has(n), g80: isG80Headlight, label: 'Farlar' },
 };
 
 /* =====================================================================
@@ -503,13 +504,16 @@ async function toggleSpoiler(install) {
 const state = { paint: null, paintName: null, rim: null, rimName: null, lights: false };
 const headlightPointLights = [];
 
+const PAINT_METALNESS = 0.55;
+const PAINT_ROUGHNESS = 0.18;
+
 function applyPaintToGroup(group, carbonOnly) {
   if (!state.paint) return;
   const meshes = collectByPredicate(group, isG80ExteriorPaint);
   uniqueMaterials(meshes).forEach((mat) => {
     if (mat.color) mat.color.set(state.paint);
-    if ('metalness' in mat) mat.metalness = 0.75;
-    if ('roughness' in mat) mat.roughness = 0.32;
+    if ('metalness' in mat) mat.metalness = PAINT_METALNESS;
+    if ('roughness' in mat) mat.roughness = PAINT_ROUGHNESS;
   });
 }
 
@@ -518,6 +522,8 @@ function applyPaint() {
   const g20PaintMeshes = collectByPredicate(g20Root, (n) => SET_PAINT.has(n));
   uniqueMaterials(g20PaintMeshes).forEach((mat) => {
     if (mat.color) mat.color.set(state.paint);
+    if ('metalness' in mat) mat.metalness = PAINT_METALNESS;
+    if ('roughness' in mat) mat.roughness = PAINT_ROUGHNESS;
   });
   Object.values(partState).forEach((st) => { if (st.g80Group) applyPaintToGroup(st.g80Group); });
   updateHud();
@@ -818,6 +824,17 @@ let baseGroundY = 0;
   g20Root.position.y = baseGroundY + initialOffset;
   scene.add(g20Root);
   hideLoader();
+
+  // Varsayılan gövde rengini baştan uygula — böylece hiçbir renk seçilmeden
+  // G20'nin kendi boyası ile takılacak M3 parçalarının orijinal (farklı) rengi
+  // arasında uyumsuzluk oluşmaz.
+  const defaultPaint = PAINT_COLORS[0];
+  state.paint = defaultPaint.hex;
+  state.paintName = defaultPaint.name;
+  applyPaint();
+  const firstSwatch = document.querySelector('#paintSwatches .swatch');
+  if (firstSwatch) firstSwatch.classList.add('is-active');
+
   updateHud();
 })();
 
