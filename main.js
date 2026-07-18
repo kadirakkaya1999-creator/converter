@@ -11,10 +11,10 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
    Örnek: frontBumper: { position:[0.02,-0.01,0.15], rotation:[0,0.03,0], scale:[1.04,1.04,1.04] }
 ===================================================================== */
 const CALIBRATION = {
-  frontBumper: { position: [0.0111, -0.5077, 0.2274], rotation: [-3.1416, -0.008, -3.1416], scale: [98.7108, 117.2147, 117.2147] },
+  frontBumper: { position: [0.0002, -0.4049, -0.1273], rotation: [3.1416, -0.0078, 3.1413], scale: [99.8446, 101.6747, 99.5061] },
   rearBumper: { position: [0.0142, -0.3798, -0.2849], rotation: [-3.1416, 0.001, -3.1416], scale: [99.0119, 101.4389, 107.2002] },
   hood: { position: [0.0247, -0.3754, -0.1151], rotation: [-3.1416, -0.0195, -3.1416], scale: [100.2913, 97.4054, 103.4228] },
-  headlights: { position: [-0.1242, -0.3667, -0.3161], rotation: [-3.1416, 0.0446, -3.1416], scale: [93.8694, 93.8694, 93.8694] },
+  headlights: { position: [-0.0573, -0.3531, -0.2204], rotation: [3.1405, 0.0224, -3.1358], scale: [98.8256, 93.8694, 93.8694] },
   spoiler: { position: [-0.0128, -0.025, 1.198], rotation: [-3.1416, -0.0202, -3.1416], scale: [93.0676, 68.237, 39.382] },
 };
 function applySavedCalibration(key, group) {
@@ -55,10 +55,10 @@ const RIM_COLORS = [
       isimler yalnızca mesh tanımlarında var. Node<->mesh eşleşmesi offline
       olarak analiz edilip aşağıdaki sabit listeler çıkarıldı.
 ===================================================================== */
-const G20_FRONT_BUMPER = [52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 76, 77, 78, 79, 80, 81, 82, 83].map(n => `Object_${n}`);
+const G20_FRONT_BUMPER = [52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 76, 77, 78, 79, 80, 81, 82, 83, 144, 158, 116, 34].map(n => `Object_${n}`);
 const G20_REAR_BUMPER = [72].map(n => `Object_${n}`);
 const G20_HOOD = [158, 159, 160, 161, 162].map(n => `Object_${n}`);
-const G20_HEADLIGHTS = [170, 171, 173, 174].map(n => `Object_${n}`);
+const G20_HEADLIGHTS = [170, 171, 173, 174, 196, 198, 207, 205].map(n => `Object_${n}`);
 const G20_PAINT_NODES = [34, 44, 72, 79, 87, 94, 106, 113, 116, 126, 144, 147, 152, 158].map(n => `Object_${n}`);
 const G20_RIM_NODES_PREFIXES = ['hub_lf', 'hub_rf', 'hub_lr', 'hub_rr']; // mesh adı bazlı (node adı yerine)
 const G20_RIM_NODES = [225, 226, 227, 229, 230, 231, 221, 222, 223, 233, 234, 235].map(n => `Object_${n}`);
@@ -75,8 +75,8 @@ const SET_RIM = nameSet(G20_RIM_NODES);
 const isG80FrontBumper = (n) => {
   const s = n.toLowerCase();
   return s.startsWith('m3g80law_bumper_f') || s.startsWith('compot_bumper') ||
-         s.includes('grille_f_csl') || s.includes('csr2_grille') || s === 'paint_fb_864' || s.startsWith('paint_fb_') ||
-         s.startsWith('for_m3') || s.startsWith('badge_fb') || s.startsWith('chrome_badgefb') || s.startsWith('blackplastic_badge_fb');
+    s.includes('grille_f_csl') || s.includes('csr2_grille') || s === 'paint_fb_864' || s === 'paint_fenders_866' || s === 'doorhandlelf_a_731' || s === 'paint_doorsfpass_paint_0_472' || s === 'paint_hood_787' || s === 'paint_doorsfdriver_269' || s.startsWith('paint_fb_') ||
+    s.startsWith('for_m3') || s.startsWith('badge_fb') || s.startsWith('chrome_badgefb') || s.startsWith('blackplastic_badge_fb');
 };
 const isG80RearBumper = (n) => {
   const s = n.toLowerCase();
@@ -121,7 +121,7 @@ viewportEl.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-const DEFAULT_CAM_POS = new THREE.Vector3(4.6, 1.7, 5.4);
+const DEFAULT_CAM_POS = new THREE.Vector3(-5.48, 1.72, -4.94);
 camera.position.copy(DEFAULT_CAM_POS);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -696,6 +696,50 @@ document.getElementById('calibEnable').addEventListener('change', (e) => {
   if (on) { refreshCalibOptions(); } else { transformControls.detach(); }
 });
 
+function frameCarInView(carObject) {
+  const panelEl = document.querySelector('.panel');
+  const vw = viewportEl.clientWidth;
+  const vh = viewportEl.clientHeight;
+
+  const box = new THREE.Box3().setFromObject(carObject);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z) * 0.62;
+
+  let visibleH = vh;
+  let verticalTargetOffset = 0;
+  if (panelEl) {
+    const pr = panelEl.getBoundingClientRect();
+    const isBottomPanel = pr.top > vh * 0.4; // mobil düzen: panel alttan geliyor
+    if (isBottomPanel) {
+      visibleH = pr.top;
+      const hiddenFraction = (vh - pr.top) / vh;
+      verticalTargetOffset = -radius * hiddenFraction * 0.9;
+    }
+  }
+
+  camera.aspect = vw / vh;
+  camera.updateProjectionMatrix();
+
+  const vFovRad = camera.fov * Math.PI / 180;
+  const shrink = vh / visibleH; // panel ne kadar alan kaplıyorsa mesafeyi o kadar artır
+  let dist = (radius / Math.sin(vFovRad / 2)) * 1.15 * shrink;
+  dist = THREE.MathUtils.clamp(dist, controls.minDistance, controls.maxDistance);
+
+  const newTarget = new THREE.Vector3(center.x, center.y + verticalTargetOffset, center.z);
+
+  // OrbitControls'ün kullanıcı döndürmesini bozmamak için kamera-hedef
+  // YÖNÜNÜ koruyup sadece mesafeyi/hedefi güncelliyoruz.
+  const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
+  if (dir.lengthSq() === 0) dir.set(0.6, 0.3, 0.7).normalize();
+
+  controls.target.copy(newTarget);
+  camera.position.copy(newTarget).addScaledVector(dir, dist);
+  controls.update();
+
+  renderer.setSize(vw, vh);
+}
+
 /* Parça sahnede yoksa/görünmüyorsa: tüm takılı M3 parçalarını parlak yeşil
    tel kafes olarak göster — malzeme/ışık/boyut sorunlarından bağımsız olarak
    geometrinin gerçekten orada olup olmadığını kesin şekilde gösterir. */
@@ -799,6 +843,10 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (g20Root) frameCarInView(g20Root);   // ← EKLE
+});
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => { if (g20Root) frameCarInView(g20Root); }, 250);  // ← EKLE (yeni)
 });
 
 const clock = new THREE.Clock();
@@ -824,6 +872,9 @@ let baseGroundY = 0;
   g20Root.position.y = baseGroundY + initialOffset;
   scene.add(g20Root);
   hideLoader();
+  scene.add(g20Root);
+  hideLoader();
+  frameCarInView(g20Root);
 
   // Varsayılan gövde rengini baştan uygula — böylece hiçbir renk seçilmeden
   // G20'nin kendi boyası ile takılacak M3 parçalarının orijinal (farklı) rengi
@@ -842,4 +893,16 @@ document.getElementById('heightAdjust').addEventListener('input', (e) => {
   const offset = parseFloat(e.target.value);
   document.getElementById('heightValue').textContent = offset.toFixed(2);
   if (g20Root) g20Root.position.y = baseGroundY + offset;
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() !== 'c') return;
+  const p = camera.position;
+  const t = controls.target;
+  const fmt = (n) => Math.round(n * 100) / 100;
+  const msg =
+    `DEFAULT_CAM_POS: new THREE.Vector3(${fmt(p.x)}, ${fmt(p.y)}, ${fmt(p.z)})\n` +
+    `controls.target: (${fmt(t.x)}, ${fmt(t.y)}, ${fmt(t.z)})`;
+  console.log(msg);
+  alert(msg);
 });
